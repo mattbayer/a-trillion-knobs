@@ -1,0 +1,68 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A single neuron · A Trillion Knobs</title><link rel="stylesheet" href="../style.css"></head><body>
+<nav class="top"><a class="brand" href="../index.html">A Trillion Knobs</a><a href="../index.html">Chapters</a><a class="here" href="index.html">Demos</a><a href="../timeline.html">Timeline</a><a href="../glossary.html">Glossary</a></nav>
+<main class="wide">
+<h1>A single neuron</h1>
+<p class="lede">Chapter 1. One neuron computes <code>w₁·x + w₂·y + b</code> and fires if the result is positive. Geometrically it makes one straight cut through the plane. The weights set the cut's orientation; the bias slides it.</p>
+<div class="row">
+  <canvas id="c"></canvas>
+  <div class="panel">
+    <label>Data</label>
+    <select id="data"><option value="linear">Two clusters (separable)</option><option value="xor">XOR (not separable)</option></select>
+    <label>Weight w₁ (on x): <b id="w1-v"></b></label><input type="range" id="w1" min="-3" max="3" step="0.01" value="1">
+    <label>Weight w₂ (on y): <b id="w2-v"></b></label><input type="range" id="w2" min="-3" max="3" step="0.01" value="-1.5">
+    <label>Bias b: <b id="b-v"></b></label><input type="range" id="b" min="-3" max="3" step="0.01" value="0.8">
+    <div class="stat" id="acc"></div>
+    <button id="learn">Run Rosenblatt's learning rule</button><button id="rand" class="ghost">Randomise</button>
+  </div>
+</div>
+<div class="try"><h2>Things to try</h2><ul>
+<li>With the two clusters, find weights by hand that classify every point. Notice many settings work.</li>
+<li>Press <b>Run Rosenblatt's learning rule</b> and watch the knobs turn themselves: each mistake nudges the weights toward the misclassified point.</li>
+<li>Switch to XOR. Try by hand, then run the learning rule. It never settles: no single straight cut can do it. This is the limitation Minsky and Papert made famous, and the reason networks need hidden layers. Then go to the <a href="playground.html">network playground</a> and solve it with one.</li>
+</ul></div>
+</main>
+<script src="common.js"></script>
+<script>
+const c = $('#c'), g = initCanvas(c, 460, 460);
+let P = dataset('linear', 120), w1 = 1, w2 = -1.5, b = 0.8, timer = null;
+function draw() {
+  const A = rgbv('--a-rgb'), B = rgbv('--b-rgb');
+  g.clearRect(0, 0, g.W, g.H);
+  heat(g, 80, (x, y) => { const k = (w1 * x + w2 * y + b) > 0 ? A : B; return [k[0], k[1], k[2], 55]; });
+  // the cut
+  g.strokeStyle = cssv('--fg'); g.lineWidth = 2; g.beginPath();
+  if (Math.abs(w2) > Math.abs(w1)) { g.moveTo(X(g, -1), Y(g, (w1 - b) / w2)); g.lineTo(X(g, 1), Y(g, (-w1 - b) / w2)); }
+  else if (Math.abs(w1) > 1e-6) { g.moveTo(X(g, (w2 - b) / w1), Y(g, -1)); g.lineTo(X(g, (-w2 - b) / w1), Y(g, 1)); }
+  g.stroke();
+  // weight vector (normal to the cut)
+  const n = Math.hypot(w1, w2) || 1, ox = -b * w1 / (n * n), oy = -b * w2 / (n * n);
+  g.strokeStyle = cssv('--muted'); g.setLineDash([4, 4]); g.beginPath();
+  g.moveTo(X(g, ox), Y(g, oy)); g.lineTo(X(g, ox + w1 / n * 0.3), Y(g, oy + w2 / n * 0.3)); g.stroke(); g.setLineDash([]);
+  let ok = 0;
+  for (const p of P) { dot(g, p.x, p.y, p.t ? cssv('--a') : cssv('--b')); if (((w1 * p.x + w2 * p.y + b) > 0 ? 1 : 0) === p.t) ok++; }
+  $('#acc').textContent = 'Correct: ' + ok + ' / ' + P.length;
+  return ok;
+}
+function setW(a, c2, d) { w1 = a; w2 = c2; b = d; for (const [id, v] of [['w1', w1], ['w2', w2], ['b', b]]) { $('#' + id).value = v; $('#' + id + '-v').textContent = v.toFixed(2); } draw(); }
+bind('w1', v => { w1 = v; draw(); }); bind('w2', v => { w2 = v; draw(); }); bind('b', v => { b = v; draw(); });
+function stop() { if (timer) { clearInterval(timer); timer = null; $('#learn').textContent = "Run Rosenblatt's learning rule"; } }
+$('#data').onchange = e => { stop(); P = dataset(e.target.value, 120); draw(); };
+$('#rand').onclick = () => { stop(); setW(randn(), randn(), randn() * 0.5); };
+$('#learn').onclick = () => {
+  if (timer) return stop();
+  $('#learn').textContent = 'Stop'; let epochs = 0;
+  timer = setInterval(() => {
+    let a = w1, c2 = w2, d = b;
+    for (let k = 0; k < 12; k++) { // a few random examples per tick
+      const p = P[Math.floor(Math.random() * P.length)], o = (a * p.x + c2 * p.y + d) > 0 ? 1 : 0, e = p.t - o;
+      a += 0.06 * e * p.x; c2 += 0.06 * e * p.y; d += 0.06 * e;
+    }
+    const cl = v => Math.max(-3, Math.min(3, v));
+    setW(cl(a), cl(c2), cl(d));
+    if (draw() === P.length || ++epochs > 600) stop();
+  }, 40);
+};
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', draw);
+draw();
+</script></body></html>

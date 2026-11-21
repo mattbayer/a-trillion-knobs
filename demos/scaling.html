@@ -1,0 +1,62 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Scaling laws · A Trillion Knobs</title><link rel="stylesheet" href="../style.css"></head><body>
+<nav class="top"><a class="brand" href="../index.html">A Trillion Knobs</a><a href="../index.html">Chapters</a><a class="here" href="index.html">Demos</a><a href="../timeline.html">Timeline</a><a href="../glossary.html">Glossary</a></nav>
+<main class="wide">
+<h1>Scaling laws, and compounding reliability</h1>
+<p class="lede">Chapters 9 and 11. Kaplan et al. (2020) found that test loss falls as a power law in model size: <code>L(N) = (N<sub>c</sub>/N)<sup>α</sup></code>, with α ≈ 0.076. The curve below is that formula, not measured data; the three markers show the sizes of GPT-1, 2 and 3 for reference.</p>
+<div class="row">
+  <canvas id="c"></canvas>
+  <div class="panel">
+    <label>Axes</label>
+    <select id="ax"><option value="log">Log–log</option><option value="lin">Linear</option></select>
+    <label>Exponent α: <b id="al-v"></b></label><input type="range" id="al" min="0.02" max="0.3" step="0.002" value="0.076">
+    <label>Irreducible loss floor: <b id="fl-v"></b></label><input type="range" id="fl" min="0" max="1.5" step="0.05" value="0">
+    <div class="stat" id="st"></div>
+  </div>
+</div>
+<div class="try"><h2>Things to try</h2><ul>
+<li>Switch between <b>linear</b> and <b>log–log</b> axes. On linear axes the same law looks like a cliff followed by a wall ("diminishing returns!"). On log axes it is a straight line with no sign of stopping. Both are honest pictures of the same function; much public argument about "hitting a wall" is an argument about which plot to look at.</li>
+<li>Read the stat: at α = 0.076, each 10× in parameters cuts the loss by only about 16%. Progress on this curve is bought with exponentially growing compute.</li>
+<li>Add an <b>irreducible floor</b> (the true entropy of text, which no model can beat). On log axes the line now bends. Whether and where real curves bend is the scaling debate in one picture.</li>
+</ul></div>
+
+<h2>Compounding reliability</h2>
+<p>Chapter 11. If an agent gets each step right with probability <i>p</i>, a task of <i>n</i> steps (with no error recovery) succeeds with probability <i>pⁿ</i>.</p>
+<div class="row"><div class="panel" style="max-width:520px">
+  <label>Per-step reliability p: <b id="p-v"></b></label><input type="range" id="p" min="0.9" max="0.9995" step="0.0005" value="0.99">
+  <table id="tab"></table>
+</div></div>
+<div class="try"><ul>
+<li>At 99% per step, a 100-step task succeeds about a third of the time. To make a 1,000-step task reliable you need roughly 99.99%. This is why agents arrived later than chatbots, and why a model that is only "slightly" more reliable can suddenly do much longer tasks: the idea behind METR's time-horizon measure.</li>
+</ul></div>
+</main>
+<script src="common.js"></script>
+<script>
+const c = $('#c'), g = initCanvas(c, 520, 380), Nc = 8.8e13, M = { l: 62, r: 16, t: 16, b: 44 };
+let al = 0.076, fl = 0, logax = true;
+const L = N => (Nc / N) ** al + fl, refs = [['GPT-1', 1.17e8], ['GPT-2', 1.5e9], ['GPT-3', 1.75e11]];
+function draw() {
+  g.clearRect(0, 0, g.W, g.H); const x0 = 1e3, x1 = 1e12, pw = g.W - M.l - M.r, ph = g.H - M.t - M.b;
+  const ymax = L(x0), ymin = logax ? Math.min(1, L(x1)) * 0.9 : 0;
+  const sx = N => M.l + (logax ? (Math.log10(N) - 3) / 9 : (N - x0) / (x1 - x0)) * pw;
+  const sy = v => M.t + (logax ? (Math.log(ymax) - Math.log(v)) / (Math.log(ymax) - Math.log(ymin)) : (ymax - v) / (ymax - ymin)) * ph;
+  g.font = '12px system-ui, sans-serif'; g.fillStyle = cssv('--muted'); g.strokeStyle = cssv('--border'); g.lineWidth = 1;
+  g.strokeRect(M.l, M.t, pw, ph);
+  for (let e = 3; e <= 12; e += 3) { const x = sx(10 ** e); if (logax || e === 3 || e === 12) { g.beginPath(); g.moveTo(x, M.t + ph); g.lineTo(x, M.t + ph + 5); g.stroke(); g.fillText('10^' + e, x - 14, M.t + ph + 18); } }
+  g.fillText('parameters N', M.l + pw / 2 - 34, g.H - 6);
+  const ticks = logax ? [1, 1.5, 2, 3, 4, 6, 8, 12, 20, 40, 80].filter(v => v > ymin && v <= ymax) : [0, ymax / 4, ymax / 2, 3 * ymax / 4, ymax];
+  for (const v of ticks) { const y = sy(v); g.beginPath(); g.moveTo(M.l - 5, y); g.lineTo(M.l, y); g.stroke(); g.fillText(v.toFixed(v < 10 ? 1 : 0), M.l - 34, y + 4); }
+  g.save(); g.translate(14, M.t + ph / 2 + 30); g.rotate(-Math.PI / 2); g.fillText('test loss', 0, 0); g.restore();
+  for (const [name, N] of refs) { const x = sx(N); g.strokeStyle = cssv('--border'); g.setLineDash([3, 4]); g.beginPath(); g.moveTo(x, M.t); g.lineTo(x, M.t + ph); g.stroke(); g.setLineDash([]); g.fillText(name, Math.min(x + 4, g.W - 44), M.t + 14 + refs.findIndex(r => r[0] === name) * 14); }
+  g.strokeStyle = cssv('--accent'); g.lineWidth = 2.5; g.beginPath();
+  for (let i = 0; i <= 300; i++) { const N = logax ? 10 ** (3 + 9 * i / 300) : x0 + (x1 - x0) * (i / 300) ** 3, x = sx(N), y = sy(L(N)); i ? g.lineTo(x, y) : g.moveTo(x, y); }
+  g.stroke();
+  for (const [, N] of refs) { g.beginPath(); g.arc(sx(N), sy(L(N)), 4, 0, 7); g.fillStyle = cssv('--a'); g.fill(); }
+  const f = 10 ** -al;
+  $('#st').innerHTML = '10× parameters → reducible loss × ' + f.toFixed(3) + ' (−' + ((1 - f) * 100).toFixed(0) + '%)<br>To halve it: ×' + (2 ** (1 / al)).toExponential(1) + ' parameters';
+}
+bind('al', v => { al = v; draw(); }); bind('fl', v => { fl = v; draw(); });
+$('#ax').onchange = e => { logax = e.target.value === 'log'; draw(); };
+bind('p', p => { $('#tab').innerHTML = '<tr><th>Steps in task</th><th>Chance the whole task succeeds</th></tr>' + [10, 30, 100, 300, 1000].map(n => '<tr><td>' + n + '</td><td>' + (p ** n * 100).toFixed(1) + '%</td></tr>').join(''); }, v => (v * 100).toFixed(2) + '%');
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', draw);
+</script></body></html>

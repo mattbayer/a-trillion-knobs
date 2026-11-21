@@ -1,0 +1,43 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Softmax and temperature · A Trillion Knobs</title><link rel="stylesheet" href="../style.css"></head><body>
+<nav class="top"><a class="brand" href="../index.html">A Trillion Knobs</a><a href="../index.html">Chapters</a><a class="here" href="index.html">Demos</a><a href="../timeline.html">Timeline</a><a href="../glossary.html">Glossary</a></nav>
+<main class="wide">
+<h1>Softmax and temperature</h1>
+<p class="lede">Chapter 5. The network's last layer gives a raw score (a <i>logit</i>) for every token. Softmax turns scores into probabilities: <code>pᵢ = exp(zᵢ/T) / Σ exp(zⱼ/T)</code>. It is the Boltzmann distribution with the logits as negative energies.</p>
+<p class="ui" style="font-size:15px">Prompt: <b>"The cat sat on the ___"</b></p>
+<div class="row">
+  <div style="flex:2 1 380px;min-width:280px">
+    <div class="bars" id="bars"></div>
+    <div class="stat" id="st"></div>
+    <h3>Sampled continuations</h3>
+    <div class="out" id="out" style="min-height:4em"></div>
+    <button id="samp">Sample 40 times</button>
+  </div>
+  <div class="panel">
+    <label>Temperature T: <b id="T-v"></b></label><input type="range" id="T" min="0.05" max="3" step="0.05" value="1">
+    <div id="logits"></div>
+  </div>
+</div>
+<div class="try"><h2>Things to try</h2><ul>
+<li>Lower T toward 0. The distribution freezes into its ground state: the model always says "mat". This is "greedy" decoding: deterministic and repetitive.</li>
+<li>Raise T to 2 or 3. Everything becomes nearly equally likely and "parliament" starts appearing. High temperature is more creative, and then incoherent.</li>
+<li>Watch the <b>entropy</b>: the model's uncertainty in bits. And the <b>loss if the true word was "sofa"</b>: that is the cross-entropy loss, −log p(correct). Raise the "sofa" logit and watch the loss fall. Training is nothing more than nudging weights so that this number, averaged over trillions of tokens, goes down.</li>
+<li>Only <i>differences</i> between logits matter: adding a constant to all of them changes nothing, just as the zero of energy is arbitrary.</li>
+</ul></div>
+</main>
+<script src="common.js"></script>
+<script>
+const W = ['mat', 'floor', 'sofa', 'roof', 'moon', 'parliament'], Z = [4.0, 3.0, 2.8, 1.6, 0.2, -1.5]; let T = 1, p = [];
+const box = $('#logits');
+W.forEach((w, i) => { box.insertAdjacentHTML('beforeend', '<label>logit for "' + w + '": <b id="z' + i + '-v"></b></label><input type="range" id="z' + i + '" min="-4" max="8" step="0.1" value="' + Z[i] + '">'); });
+function calc() {
+  const m = Math.max(...Z), e = Z.map(z => Math.exp((z - m) / T)), s = e.reduce((a, b) => a + b, 0); p = e.map(v => v / s);
+  $('#bars').innerHTML = W.map((w, i) => '<div class="bar"><span>' + w + '</span><i style="width:' + p[i] * 100 + '%"></i><span>' + (p[i] * 100).toFixed(1) + '%</span></div>').join('');
+  const H = -p.reduce((a, q) => a + (q > 0 ? q * Math.log2(q) : 0), 0);
+  $('#st').innerHTML = 'Entropy: ' + H.toFixed(2) + ' bits (max ' + Math.log2(W.length).toFixed(2) + ') · loss if the true word was "sofa": ' + (-Math.log(p[2])).toFixed(2) + ' nats';
+}
+function sample() { let r = Math.random(); for (let i = 0; i < p.length; i++) { r -= p[i]; if (r <= 0) return W[i]; } return W[W.length - 1]; }
+W.forEach((w, i) => bind('z' + i, v => { Z[i] = v; calc(); }));
+bind('T', v => { T = v; calc(); });
+$('#samp').onclick = () => { const a = []; for (let i = 0; i < 40; i++) a.push(sample()); $('#out').textContent = a.join('  '); };
+</script></body></html>

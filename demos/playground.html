@@ -1,0 +1,109 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Network playground · A Trillion Knobs</title><link rel="stylesheet" href="../style.css"></head><body>
+<nav class="top"><a class="brand" href="../index.html">A Trillion Knobs</a><a href="../index.html">Chapters</a><a class="here" href="index.html">Demos</a><a href="../timeline.html">Timeline</a><a href="../glossary.html">Glossary</a></nav>
+<main class="wide">
+<h1>A tiny network, learning</h1>
+<p class="lede">Chapters 3 and 4. A real multi-layer perceptron, trained live in your browser by backpropagation. <b>Left:</b> the input plane, shaded by the network's current answer. <b>Right:</b> the same points as the last hidden layer sees them, the network's internal <i>representation</i>, where a single straight cut finishes the job.</p>
+<div class="row">
+  <div><canvas id="c"></canvas><div class="ui" style="font-size:13px;color:var(--muted)">Input space</div></div>
+  <div><canvas id="r"></canvas><div class="ui" style="font-size:13px;color:var(--muted)" id="rcap">Representation space</div></div>
+  <div class="panel">
+    <label>Data</label>
+    <select id="data"><option value="rings">Rings</option><option value="xor">XOR</option><option value="spiral">Spiral</option><option value="linear">Two clusters</option></select>
+    <label>Hidden layers: <b id="depth-v"></b></label><input type="range" id="depth" min="0" max="4" step="1" value="2">
+    <label>Neurons per layer: <b id="width-v"></b></label><input type="range" id="width" min="2" max="10" step="1" value="6">
+    <label>Activation</label>
+    <select id="act"><option value="tanh">tanh (smooth S-curve)</option><option value="relu">ReLU</option><option value="linear">Linear (no bend)</option></select>
+    <label><input type="checkbox" id="neck" checked> Add a final 2-neuron layer (so the representation can be plotted exactly)</label>
+    <label>Learning rate: <b id="lr-v"></b></label><input type="range" id="lr" min="-3" max="-1" step="0.05" value="-2">
+    <div class="stat" id="st"></div>
+    <button id="run">Pause</button><button id="reset" class="ghost">Re-initialise weights</button>
+  </div>
+</div>
+<div class="try"><h2>Things to try</h2><ul>
+<li><b>Rings, as loaded.</b> Watch the right-hand panel: the network pulls the inner disc and the outer ring apart until a straight line separates them. That is the "un-crumpling" from chapter 3. The hidden layers do not solve the problem; they change coordinates until it is easy.</li>
+<li>Set <b>hidden layers to 0</b>. You are back to a single neuron: one straight cut, hopeless on rings and XOR.</li>
+<li>Restore the layers and set the activation to <b>Linear</b>. However many layers you add, it behaves like zero layers. A stack of linear maps is one linear map; the bend is what makes depth mean something.</li>
+<li><b>Spiral</b> is hard. Try 1 layer of 10, then 3 layers of 8. Depth buys expressiveness more cheaply than width.</li>
+<li>Count the weights (shown below the controls). A few hundred knobs, set entirely by gradient descent, starting from random.</li>
+</ul></div>
+</main>
+<script src="common.js"></script>
+<script>
+const c = $('#c'), g = initCanvas(c, 340, 340), rc = $('#r'), rg = initCanvas(rc, 340, 340);
+let P, net, depth = 2, width = 6, act = 'tanh', neck = true, lr = 0.01, running = true, step = 0, loss = 0;
+const f = { tanh: Math.tanh, relu: z => z > 0 ? z : 0, linear: z => z };
+const df = { tanh: a => 1 - a * a, relu: a => a > 0 ? 1 : 0, linear: () => 1 }; // derivative in terms of the output a
+function build() {
+  const sizes = [2]; for (let i = 0; i < depth; i++) sizes.push(width); if (neck && depth > 0) sizes.push(2); sizes.push(1);
+  net = []; let count = 0;
+  for (let l = 1; l < sizes.length; l++) {
+    const n = sizes[l], m = sizes[l - 1], W = new Float64Array(n * m), s = Math.sqrt((act === 'relu' ? 2 : 1) / m);
+    for (let k = 0; k < W.length; k++) W[k] = randn() * s;
+    const z = k => new Float64Array(k);
+    net.push({ n, m, W, b: z(n), gW: z(n * m), gb: z(n), mW: z(n * m), vW: z(n * m), mb: z(n), vb: z(n), a: z(n) });
+    count += n * m + n;
+  }
+  step = 0; net.count = count;
+}
+function forward(x, y) { // returns probability; leaves activations in net[l].a
+  let inp = [x, y];
+  for (let l = 0; l < net.length; l++) {
+    const L = net[l], last = l === net.length - 1;
+    for (let i = 0; i < L.n; i++) { let z = L.b[i]; for (let j = 0; j < L.m; j++) z += L.W[i * L.m + j] * inp[j]; L.a[i] = last ? 1 / (1 + Math.exp(-z)) : f[act](z); }
+    inp = L.a;
+  }
+  return inp[0];
+}
+function train() {
+  for (const L of net) { L.gW.fill(0); L.gb.fill(0); }
+  loss = 0;
+  for (const p of P) {
+    const o = forward(p.x, p.y); loss -= Math.log(Math.max(1e-9, p.t ? o : 1 - o));
+    let delta = [o - p.t]; // dLoss/dz at the output (sigmoid + cross-entropy)
+    for (let l = net.length - 1; l >= 0; l--) {
+      const L = net[l], inp = l ? net[l - 1].a : [p.x, p.y], back = new Array(L.m).fill(0);
+      for (let i = 0; i < L.n; i++) { L.gb[i] += delta[i]; for (let j = 0; j < L.m; j++) { L.gW[i * L.m + j] += delta[i] * inp[j]; back[j] += L.W[i * L.m + j] * delta[i]; } }
+      if (l) delta = back.map((v, j) => v * df[act](inp[j])); // chain rule through the activation
+    }
+  }
+  loss /= P.length; step++;
+  const b1 = 0.9, b2 = 0.999, c1 = 1 - b1 ** step, c2 = 1 - b2 ** step; // Adam
+  const upd = (w, gr, m, v) => { for (let k = 0; k < w.length; k++) { const q = gr[k] / P.length; m[k] = b1 * m[k] + (1 - b1) * q; v[k] = b2 * v[k] + (1 - b2) * q * q; w[k] -= lr * (m[k] / c1) / (Math.sqrt(v[k] / c2) + 1e-8); } };
+  for (const L of net) { upd(L.W, L.gW, L.mW, L.vW); upd(L.b, L.gb, L.mb, L.vb); }
+}
+function draw() {
+  const A = rgbv('--a-rgb'), B = rgbv('--b-rgb'), ca = cssv('--a'), cb = cssv('--b');
+  g.clearRect(0, 0, g.W, g.H);
+  heat(g, 56, (x, y) => { const o = forward(x, y), k = o > 0.5 ? A : B; return [k[0], k[1], k[2], Math.abs(o - 0.5) * 2 * 120 + 10]; });
+  let ok = 0; const reps = [];
+  for (const p of P) { const o = forward(p.x, p.y); if ((o > 0.5 ? 1 : 0) === p.t) ok++; const h = net.length > 1 ? net[net.length - 2].a : [p.x, p.y]; reps.push([h[0], h[1], p.t]); dot(g, p.x, p.y, p.t ? ca : cb, 3.2); }
+  // representation panel
+  rg.clearRect(0, 0, rg.W, rg.H);
+  let lo = [1e9, 1e9], hi = [-1e9, -1e9];
+  for (const q of reps) for (let k = 0; k < 2; k++) { lo[k] = Math.min(lo[k], q[k]); hi[k] = Math.max(hi[k], q[k]); }
+  const pad = k => (hi[k] - lo[k]) * 0.08 + 1e-6, sx = h => (h - lo[0] + pad(0)) / (hi[0] - lo[0] + 2 * pad(0)) * rg.W, sy = h => (1 - (h - lo[1] + pad(1)) / (hi[1] - lo[1] + 2 * pad(1))) * rg.H;
+  const out = net[net.length - 1], exact = out.m === 2;
+  if (exact) { // the output neuron's straight cut, in representation coordinates
+    const w1 = out.W[0], w2 = out.W[1], b = out.b[0], x0 = lo[0] - pad(0), x1 = hi[0] + pad(0), y0 = lo[1] - pad(1), y1 = hi[1] + pad(1);
+    rg.strokeStyle = cssv('--fg'); rg.lineWidth = 2; rg.beginPath();
+    if (Math.abs(w2) > Math.abs(w1)) { rg.moveTo(sx(x0), sy(-(w1 * x0 + b) / w2)); rg.lineTo(sx(x1), sy(-(w1 * x1 + b) / w2)); }
+    else if (Math.abs(w1) > 1e-9) { rg.moveTo(sx(-(w2 * y0 + b) / w1), sy(y0)); rg.lineTo(sx(-(w2 * y1 + b) / w1), sy(y1)); }
+    rg.stroke();
+  }
+  for (const q of reps) { rg.beginPath(); rg.arc(sx(q[0]), sy(q[1]), 3.2, 0, 7); rg.fillStyle = q[2] ? ca : cb; rg.fill(); }
+  $('#rcap').textContent = net.length === 1 ? 'No hidden layer: the representation is just the input' :
+    exact ? 'Last hidden layer (2 neurons) + the output neuron\'s straight cut' : 'First 2 of ' + out.m + ' neurons in the last hidden layer (a projection)';
+  $('#st').innerHTML = 'Step ' + step + ' · loss ' + loss.toFixed(3) + ' · ' + ok + '/' + P.length + ' correct<br><span style="font-weight:400;color:var(--muted)">' + net.count + ' weights and biases</span>';
+}
+function loop() { if (running) { for (let k = 0; k < 4; k++) train(); draw(); } requestAnimationFrame(loop); }
+function reset() { build(); train(); draw(); }
+bind('depth', v => { depth = v; if (net) reset(); }); bind('width', v => { width = v; if (net) reset(); });
+bind('lr', s => { lr = 10 ** s; }, s => (10 ** s).toFixed(4));
+$('#act').onchange = e => { act = e.target.value; reset(); };
+$('#neck').onchange = e => { neck = e.target.checked; reset(); };
+$('#data').onchange = e => { P = dataset(e.target.value, 200); reset(); };
+$('#reset').onclick = reset;
+$('#run').onclick = e => { running = !running; e.target.textContent = running ? 'Pause' : 'Resume'; };
+P = dataset('rings', 200); reset(); loop();
+</script></body></html>

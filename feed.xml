@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd">
+<channel>
+  <title>A Trillion Knobs</title>
+  <link>https://mattbayer.github.io/a-trillion-knobs/</link>
+  <language>en-gb</language>
+  <description>The ideas and history behind modern AI, for the technically curious. A thirteen-chapter audiobook, with a companion site of maths, demos and sources.</description>
+  <itunes:author>A Trillion Knobs</itunes:author>
+  <itunes:summary>The ideas and history behind modern AI, for the technically curious</itunes:summary>
+  <itunes:type>serial</itunes:type>
+  <itunes:explicit>false</itunes:explicit>
+  <itunes:block>Yes</itunes:block>
+  <itunes:category text="Technology"/>
+  <itunes:image href="https://mattbayer.github.io/a-trillion-knobs/cover.jpg"/>
+  <image><url>https://mattbayer.github.io/a-trillion-knobs/cover.jpg</url><title>A Trillion Knobs</title><link>https://mattbayer.github.io/a-trillion-knobs/</link></image>
+<item>
+  <title>Chapter 1: The Function Machine</title>
+  <itunes:episode>1</itunes:episode>
+  <itunes:episodeType>full</itunes:episodeType>
+  <description>This book was written to be listened to. That shapes it in a few ways. There are no equations read aloud, no tables, and no moments where I ask you to look at a figure. When an idea really wants a picture or a formula, I will describe it in words, and the picture itself lives on the companion website, where each chapter has a page of notes, the mathematics written out properly, links to the…
+
+Companion page (maths, demos, sources): https://mattbayer.github.io/a-trillion-knobs/chapters/01.html</description>
+  <link>https://mattbayer.github.io/a-trillion-knobs/chapters/01.html</link>
+  <guid isPermaLink="false">a-trillion-knobs-ch01</guid>
+  <pubDate>Sat, 14 Nov 2026 09:00:00 +0000</pubDate>
+  <enclosure url="https://mattbayer.github.io/a-trillion-knobs/audio/01%20-%20The%20Function%20Machine.mp3" length="6198641" type="audio/mpeg"/>
+  <itunes:duration>1031</itunes:duration>
+</item>
+<item>
+  <title>Chapter 2: Rolling Downhill</title>
+  <itunes:episode>2</itunes:episode>
+  <itunes:episodeType>full</itunes:episodeType>
+  <description>Imagine you are standing in front of a machine with a million knobs on it. You feed in a picture of a handwritten digit, a seven, say, and the machine lights up one of ten bulbs to tell you which digit it thinks it saw. At the moment the knobs are set at random, and the machine says &quot;three&quot;. Your job is to turn the knobs until the machine gets it right, not just for this seven but for sixty…
+
+Companion page (maths, demos, sources): https://mattbayer.github.io/a-trillion-knobs/chapters/02.html</description>
+  <link>https://mattbayer.github.io/a-trillion-knobs/chapters/02.html</link>
+  <guid isPermaLink="false">a-trillion-knobs-ch02</guid>
+  <pubDate>Sat, 14 Nov 2026 10:00:00 +0000</pubDate>
+  <enclosure url="https://mattbayer.github.io/a-trillion-knobs/audio/02%20-%20Rolling%20Downhill.mp3" length="6455213" type="audio/mpeg"/>
+  <itunes:duration>1074</itunes:duration>
+</item>
+<item>
+  <title>Chapter 3: Why Depth?</title>
+  <itunes:episode>3</itunes:episode>
+  <itunes:episodeType>full</itunes:episodeType>
+  <description>In chapter one I left a question hanging. A neuron computes a weighted sum of its inputs and then passes it through an activation function, a little non-linear squashing step. Why bother with the squashing? Why not just pass along the weighted sum?
+
+Companion page (maths, demos, sources): https://mattbayer.github.io/a-trillion-knobs/chapters/03.html</description>
+  <link>https://mattbayer.github.io/a-trillion-knobs/chapters/03.html</link>
+  <guid isPermaLink="false">a-trillion-knobs-ch03</guid>
+  <pubDate>Sat, 14 Nov 2026 11:00:00 +0000</pubDate>
+  <enclosure url="https://mattbayer.github.io/a-trillion-knobs/audio/03%20-%20Why%20Depth.mp3" length="6773189" type="audio/mpeg"/>
+  <itunes:duration>1127</itunes:duration>
+</item>
+<item>
+  <title>Chapter 4: The ImageNet Moment</title>
+  <itunes:episode>4</itunes:episode>
+  <itunes:episodeType>full</itunes:episodeType>
+  <description>At the end of the last chapter, the believers in neural networks had their ideas in place, and lacked two things: data, and computing power. This chapter is about how each arrived, from directions nobody in the field had planned, and what happened when they met.
+
+Companion page (maths, demos, sources): https://mattbayer.github.io/a-trillion-knobs/chapters/04.html</description>
+  <link>https://mattbayer.github.io/a-trillion-knobs/chapters/04.html</link>
+  <guid isPermaLink="false">a-trillion-knobs-ch04</guid>
+  <pubDate>Sat, 14 Nov 2026 12:00:00 +0000</pubDate>
+  <enclosure url="https://mattbayer.github.io/a-trillion-knobs/audio/04%20-%20The%20ImageNet%20Moment.mp3" length="6962026" type="audio/mpeg"/>
+  <itunes:duration>1158</itunes:duration>
+</item>
+<item>
+  <title>Chapter 5: Words into Vectors</title>
+  <itunes:episode>5</itunes:episode>
+  <itunes:episodeType>full</itunes:episodeType>
+  <description>In about 1950, Claude Shannon played a game with his wife, Betty. He would pick a passage from a book, and she would try to guess it, one letter at a time. For each letter she guessed until she got it right, and he wrote down how many guesses it had taken. Then on to the next letter.
+
+Companion page (maths, demos, sources): https://mattbayer.github.io/a-trillion-knobs/chapters/05.html</description>
+  <link>https://mattbayer.github.io/a-trillion-knobs/chapters/05.html</link>
+  <guid isPermaLink="false">a-trillion-knobs-ch05</guid>
+  <pubDate>Sat, 14 Nov 2026 13:00:00 +0000</pubDate>
+  <enclosure url="https://mattbayer.github.io/a-trillion-knobs/audio/05%20-%20Words%20into%20Vectors.mp3" length="6651972" type="audio/mpeg"/>
+  <itunes:duration>1107</itunes:duration>
+</item>
+<item>
+  <title>Chapter 6: The Memory Problem</title>
+  <itunes:episode>6</itunes:episode>
+  <itunes:episodeType>full</itunes:episodeType>
+  <description>The networks we have met so far take in an input of fixed size, a picture of so many pixels, and produce an output. Information flows in one direction, from bottom to top, and then the computation is over. Language does not come like that. A sentence can be three words long or three hundred. It arrives in order, and the order matters. &quot;Dog bites man&quot; is not news; &quot;man bites dog&quot; is.
+
+Companion page (maths, demos, sources): https://mattbayer.github.io/a-trillion-knobs/chapters/06.html</description>
+  <link>https://mattbayer.github.io/a-trillion-knobs/chapters/06.html</link>
+  <guid isPermaLink="false">a-trillion-knobs-ch06</guid>
+  <pubDate>Sat, 14 Nov 2026 14:00:00 +0000</pubDate>
+  <enclosure url="https://mattbayer.github.io/a-trillion-knobs/audio/06%20-%20The%20Memory%20Problem.mp3" length="6030855" type="audio/mpeg"/>
+  <itunes:duration>1003</itunes:duration>
+</item>
+<item>
+  <title>Chapter 7: Attention Is All You Need</title>
+  <itunes:episode>7</itunes:episode>
+  <itunes:episodeType>full</itunes:episodeType>
+  <description>The most influential paper in the modern history of artificial intelligence was written by eight people at Google, in a few hectic months in the first half of 2017. Its first page carries a footnote which says that all eight contributed equally and that the order of their names is random. That is unusual, and it gives you a sense of how the thing came about: not as the plan of one senior…
+
+Companion page (maths, demos, sources): https://mattbayer.github.io/a-trillion-knobs/chapters/07.html</description>
+  <link>https://mattbayer.github.io/a-trillion-knobs/chapters/07.html</link>
+  <guid isPermaLink="false">a-trillion-knobs-ch07</guid>
+  <pubDate>Sat, 14 Nov 2026 15:00:00 +0000</pubDate>
+  <enclosure url="https://mattbayer.github.io/a-trillion-knobs/audio/07%20-%20Attention%20Is%20All%20You%20Need.mp3" length="7415221" type="audio/mpeg"/>
+  <itunes:duration>1234</itunes:duration>
+</item>
+<item>
+  <title>Chapter 8: The Generative Pre-trained Transformer</title>
+  <itunes:episode>8</itunes:episode>
+  <itunes:episodeType>full</itunes:episodeType>
+  <description>In 2017, the year of the Transformer paper, a young researcher at OpenAI named Alec Radford ran an experiment whose result surprised him. He took eighty-two million product reviews from Amazon, and trained a recurrent network on them to do one thing only: to predict the next character. Not the next word; the next letter or punctuation mark. It took a month.
+
+Companion page (maths, demos, sources): https://mattbayer.github.io/a-trillion-knobs/chapters/08.html</description>
+  <link>https://mattbayer.github.io/a-trillion-knobs/chapters/08.html</link>
+  <guid isPermaLink="false">a-trillion-knobs-ch08</guid>
+  <pubDate>Sat, 14 Nov 2026 16:00:00 +0000</pubDate>
+  <enclosure url="https://mattbayer.github.io/a-trillion-knobs/audio/08%20-%20The%20Generative%20Pre-trained%20Transformer.mp3" length="6467487" type="audio/mpeg"/>
+  <itunes:duration>1076</itunes:duration>
+</item>
+<item>
+  <title>Chapter 9: The Bitter Lesson and the Scaling Laws</title>
+  <itunes:episode>9</itunes:episode>
+  <itunes:episodeType>full</itunes:episodeType>
+  <description>In March of 2019, a computer scientist named Richard Sutton posted a short essay on his personal website. Sutton is one of the founders of the field of reinforcement learning, which we will come to in chapter eleven, and he has a reputation for thinking in decades. The essay was barely more than a thousand words long. It was called &quot;The Bitter Lesson&quot;, and it may be the most influential piece of…
+
+Companion page (maths, demos, sources): https://mattbayer.github.io/a-trillion-knobs/chapters/09.html</description>
+  <link>https://mattbayer.github.io/a-trillion-knobs/chapters/09.html</link>
+  <guid isPermaLink="false">a-trillion-knobs-ch09</guid>
+  <pubDate>Sat, 14 Nov 2026 17:00:00 +0000</pubDate>
+  <enclosure url="https://mattbayer.github.io/a-trillion-knobs/audio/09%20-%20The%20Bitter%20Lesson%20and%20the%20Scaling%20Laws.mp3" length="6458983" type="audio/mpeg"/>
+  <itunes:duration>1075</itunes:duration>
+</item>
+<item>
+  <title>Chapter 10: From Autocomplete to Assistant</title>
+  <itunes:episode>10</itunes:episode>
+  <itunes:episodeType>full</itunes:episodeType>
+  <description>On the thirtieth of November 2022, OpenAI put a new product on its website. Internally it had been described as a low-key research preview. The company&#x27;s leaders did not expect very much from it; the language model underneath was a refinement of one that had been available to software developers for some time, and had made little stir outside the industry. Some of the staff ran a sweepstake on…
+
+Companion page (maths, demos, sources): https://mattbayer.github.io/a-trillion-knobs/chapters/10.html</description>
+  <link>https://mattbayer.github.io/a-trillion-knobs/chapters/10.html</link>
+  <guid isPermaLink="false">a-trillion-knobs-ch10</guid>
+  <pubDate>Sat, 14 Nov 2026 18:00:00 +0000</pubDate>
+  <enclosure url="https://mattbayer.github.io/a-trillion-knobs/audio/10%20-%20From%20Autocomplete%20to%20Assistant.mp3" length="6347554" type="audio/mpeg"/>
+  <itunes:duration>1056</itunes:duration>
+</item>
+<item>
+  <title>Chapter 11: Learning to Think, Learning to Act</title>
+  <itunes:episode>11</itunes:episode>
+  <itunes:episodeType>full</itunes:episodeType>
+  <description>In March 2016, in a hotel in Seoul, a computer program called AlphaGo was playing the second game of a five-game match against Lee Sedol, one of the best Go players of his generation. On its thirty-seventh move, the program put a stone in a position that made the professional commentators think there had been a mistake. It was a kind of move that strong human players are taught not to make, on a…
+
+Companion page (maths, demos, sources): https://mattbayer.github.io/a-trillion-knobs/chapters/11.html</description>
+  <link>https://mattbayer.github.io/a-trillion-knobs/chapters/11.html</link>
+  <guid isPermaLink="false">a-trillion-knobs-ch11</guid>
+  <pubDate>Sat, 14 Nov 2026 19:00:00 +0000</pubDate>
+  <enclosure url="https://mattbayer.github.io/a-trillion-knobs/audio/11%20-%20Learning%20to%20Think%2C%20Learning%20to%20Act.mp3" length="7047809" type="audio/mpeg"/>
+  <itunes:duration>1173</itunes:duration>
+</item>
+<item>
+  <title>Chapter 12: Inside the Black Box</title>
+  <itunes:episode>12</itunes:episode>
+  <itunes:episodeType>full</itunes:episodeType>
+  <description>For a day or so in May 2024, the company Anthropic made a curious version of its Claude model available to the public. If you asked it how you ought to spend ten dollars, it advised you to drive across the Golden Gate Bridge and pay the toll. If you asked it for a love story, it wrote one about a car that longed to cross a certain suspension bridge on a foggy day. If you asked it what it was,…
+
+Companion page (maths, demos, sources): https://mattbayer.github.io/a-trillion-knobs/chapters/12.html</description>
+  <link>https://mattbayer.github.io/a-trillion-knobs/chapters/12.html</link>
+  <guid isPermaLink="false">a-trillion-knobs-ch12</guid>
+  <pubDate>Sat, 14 Nov 2026 20:00:00 +0000</pubDate>
+  <enclosure url="https://mattbayer.github.io/a-trillion-knobs/audio/12%20-%20Inside%20the%20Black%20Box.mp3" length="6717417" type="audio/mpeg"/>
+  <itunes:duration>1118</itunes:duration>
+</item>
+<item>
+  <title>Chapter 13: The Open Questions</title>
+  <itunes:episode>13</itunes:episode>
+  <itunes:episodeType>full</itunes:episodeType>
+  <description>In October 2024, the Nobel Prize in Physics was awarded to John Hopfield and Geoffrey Hinton, for foundational discoveries that enable machine learning with artificial neural networks. A good many physicists were taken aback. Was this physics?
+
+Companion page (maths, demos, sources): https://mattbayer.github.io/a-trillion-knobs/chapters/13.html</description>
+  <link>https://mattbayer.github.io/a-trillion-knobs/chapters/13.html</link>
+  <guid isPermaLink="false">a-trillion-knobs-ch13</guid>
+  <pubDate>Sat, 14 Nov 2026 21:00:00 +0000</pubDate>
+  <enclosure url="https://mattbayer.github.io/a-trillion-knobs/audio/13%20-%20The%20Open%20Questions.mp3" length="6868910" type="audio/mpeg"/>
+  <itunes:duration>1143</itunes:duration>
+</item>
+</channel>
+</rss>

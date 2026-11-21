@@ -1,0 +1,76 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Convolution kernels · A Trillion Knobs</title><link rel="stylesheet" href="../style.css"></head><body>
+<nav class="top"><a class="brand" href="../index.html">A Trillion Knobs</a><a href="../index.html">Chapters</a><a class="here" href="index.html">Demos</a><a href="../timeline.html">Timeline</a><a href="../glossary.html">Glossary</a></nav>
+<main class="wide">
+<h1>Convolution: one neuron, slid across an image</h1>
+<p class="lede">Chapter 3. The nine numbers below are the weights of one neuron looking at a 3×3 patch. Sliding it over every position gives a feature map. You know this as filtering with a kernel. In a convolutional network the only difference is that nobody types the numbers in: gradient descent finds them.</p>
+<div class="row">
+  <div><canvas id="src" class="px"></canvas><div class="ui" style="font-size:13px;color:var(--muted)">Input (draw on it)</div></div>
+  <div><canvas id="dst" class="px"></canvas><div class="ui" style="font-size:13px;color:var(--muted)">Feature map</div></div>
+  <div class="panel">
+    <label>Preset kernel</label>
+    <select id="preset"></select>
+    <label>Weights</label>
+    <div class="kgrid" id="k"></div>
+    <label><input type="checkbox" id="relu"> Apply ReLU (keep positive responses only)</label>
+    <button id="phantom">Phantom</button><button id="clear" class="ghost">Blank</button>
+  </div>
+</div>
+<div class="try"><h2>Things to try</h2><ul>
+<li><b>Vertical edge</b> is exactly the neuron from chapter 1: −1 on the left, +1 on the right. Mid-grey means zero response. Bright means dark-to-bright going rightwards; dark means the reverse.</li>
+<li>Tick <b>ReLU</b>. Now the neuron only fires for one polarity of edge. To catch both, a network needs two filters. That is why real conv layers learn dozens.</li>
+<li>Type in your own weights. Try making a detector for diagonal edges, or for isolated bright dots.</li>
+<li>The first layer of AlexNet learned filters much like these (oriented edges, colour blobs) with no one telling it to. Deeper layers apply filters to stacks of feature maps, finding patterns of patterns.</li>
+</ul></div>
+</main>
+<script src="common.js"></script>
+<script>
+const N = 128, V = 300;
+const sc = $('#src'), dc = $('#dst'); for (const q of [sc, dc]) { q.width = N; q.height = N; q.style.width = V + 'px'; q.style.aspectRatio = '1'; }
+const sg = sc.getContext('2d', { willReadFrequently: true }), dg = dc.getContext('2d');
+const PRE = {
+  'Vertical edge (Sobel x)': [-1, 0, 1, -2, 0, 2, -1, 0, 1], 'Horizontal edge (Sobel y)': [-1, -2, -1, 0, 0, 0, 1, 2, 1],
+  'Identity': [0, 0, 0, 0, 1, 0, 0, 0, 0], 'Blur (box)': Array(9).fill(0.11), 'Sharpen': [0, -1, 0, -1, 5, -1, 0, -1, 0],
+  'Laplacian (all edges)': [0, 1, 0, 1, -4, 1, 0, 1, 0], 'Diagonal edge': [-2, -1, 0, -1, 0, 1, 0, 1, 2],
+};
+const kd = $('#k'), sel = $('#preset'); let K = PRE['Vertical edge (Sobel x)'].slice();
+for (let i = 0; i < 9; i++) { const el = document.createElement('input'); el.type = 'number'; el.step = '0.5'; el.oninput = () => { K[i] = +el.value || 0; run(); }; kd.appendChild(el); }
+for (const name in PRE) { const o = document.createElement('option'); o.textContent = name; sel.appendChild(o); }
+function setK(a) { K = a.slice(); [...kd.children].forEach((el, i) => el.value = K[i]); run(); }
+sel.onchange = () => setK(PRE[sel.value]);
+function phantom() { // a loose Shepp-Logan-style head phantom
+  sg.fillStyle = '#000'; sg.fillRect(0, 0, N, N);
+  const E = (x, y, a, b, r, col) => { sg.beginPath(); sg.ellipse(x, y, a, b, r, 0, 7); sg.fillStyle = col; sg.fill(); };
+  E(64, 64, 44, 58, 0, '#f2f2f2'); E(64, 66, 40, 53, 0, '#5a5a5a'); E(80, 64, 9, 20, -0.3, '#262626'); E(48, 64, 12, 24, 0.3, '#262626');
+  E(64, 40, 12, 14, 0, '#8a8a8a'); E(64, 78, 5, 5, 0, '#a0a0a0'); E(58, 100, 3, 2, 0, '#b0b0b0'); E(64, 100, 2, 2, 0, '#b0b0b0'); E(71, 100, 2, 3, 0, '#b0b0b0');
+  run();
+}
+function run() {
+  const im = sg.getImageData(0, 0, N, N).data, src = new Float32Array(N * N), out = new Float32Array(N * N);
+  for (let i = 0; i < N * N; i++) src[i] = im[i * 4] / 255;
+  let mx = 1e-6;
+  for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+    let s = 0;
+    for (let v = -1; v <= 1; v++) for (let u = -1; u <= 1; u++) {
+      const xx = Math.min(N - 1, Math.max(0, x + u)), yy = Math.min(N - 1, Math.max(0, y + v));
+      s += K[(v + 1) * 3 + (u + 1)] * src[yy * N + xx];
+    }
+    out[y * N + x] = s; mx = Math.max(mx, Math.abs(s));
+  }
+  const relu = $('#relu').checked, zeroSum = Math.abs(K.reduce((a, b) => a + b, 0)) < 0.05, o = dg.createImageData(N, N);
+  for (let i = 0; i < N * N; i++) {
+    let v = out[i];
+    v = relu ? Math.max(0, v) / (zeroSum ? mx : 1) : zeroSum ? 0.5 + v / (2 * mx) : v;
+    const b = Math.max(0, Math.min(255, v * 255)); o.data[i * 4] = o.data[i * 4 + 1] = o.data[i * 4 + 2] = b; o.data[i * 4 + 3] = 255;
+  }
+  dg.putImageData(o, 0, 0);
+}
+let down = false, last = null;
+const paint = e => { const [x, y] = pointer(sc, e, N, N); sg.strokeStyle = '#fff'; sg.lineWidth = 4; sg.lineCap = 'round'; sg.beginPath(); sg.moveTo(...(last || [x, y])); sg.lineTo(x + 0.01, y); sg.stroke(); last = [x, y]; run(); };
+sc.addEventListener('pointerdown', e => { down = true; last = null; sc.setPointerCapture(e.pointerId); paint(e); });
+sc.addEventListener('pointermove', e => { if (down) paint(e); });
+sc.addEventListener('pointerup', () => { down = false; });
+$('#relu').onchange = run; $('#phantom').onclick = phantom;
+$('#clear').onclick = () => { sg.fillStyle = '#000'; sg.fillRect(0, 0, N, N); run(); };
+[...kd.children].forEach((el, i) => el.value = K[i]); phantom();
+</script></body></html>

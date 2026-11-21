@@ -1,0 +1,92 @@
+:root {
+  --bg: #faf8f4; --card: #ffffff; --fg: #1f2328; --muted: #667085; --border: #e2ddd3;
+  --accent: #0f766e; --accent-soft: #d9efec;
+  --a: #d97706; --b: #2563eb; --a-rgb: 217,119,6; --b-rgb: 37,99,235;
+  --code: #f1ede5;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #15171a; --card: #1d2024; --fg: #e6e3dc; --muted: #9aa3ad; --border: #32363c;
+    --accent: #4fd1c5; --accent-soft: #173b38;
+    --a: #f59e0b; --b: #60a5fa; --a-rgb: 245,158,11; --b-rgb: 96,165,250;
+    --code: #262a30;
+  }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--fg);
+  font: 17px/1.65 Georgia, "Iowan Old Style", "Times New Roman", serif; }
+nav.top { display: flex; gap: 18px; flex-wrap: wrap; align-items: baseline; padding: 14px 20px;
+  border-bottom: 1px solid var(--border); font: 14px/1.4 system-ui, "Segoe UI", sans-serif; }
+nav.top a { color: var(--muted); text-decoration: none; }
+nav.top a:hover, nav.top a.here { color: var(--accent); }
+nav.top .brand { font-weight: 700; color: var(--fg); margin-right: auto; }
+main { max-width: 720px; margin: 0 auto; padding: 28px 20px 80px; }
+main.wide { max-width: 980px; }
+h1 { font-size: 2rem; line-height: 1.2; margin: 0.4em 0 0.5em; text-wrap: balance; }
+h2 { font-size: 1.3rem; margin: 2em 0 0.5em; }
+h3 { font-size: 1.05rem; margin: 1.5em 0 0.4em; }
+h1, h2, h3, .ui, button, label, select, input, table { font-family: system-ui, "Segoe UI", sans-serif; }
+a { color: var(--accent); }
+p { margin: 0 0 1em; }
+code { background: var(--code); padding: 1px 5px; border-radius: 4px;
+  font: 0.85em/1.4 ui-monospace, Consolas, monospace; }
+ul, ol { padding-left: 1.3em; } li { margin: 0.35em 0; }
+.lede { color: var(--muted); font-size: 1.05rem; }
+.part { font: 700 12px/1 system-ui, sans-serif; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--muted); margin: 2.4em 0 0.8em; }
+.toc { list-style: none; padding: 0; margin: 0; }
+.toc li { margin: 0; border-top: 1px solid var(--border); }
+.toc a { display: flex; gap: 14px; padding: 12px 4px; text-decoration: none; color: var(--fg); align-items: baseline; }
+.toc a:hover { background: var(--accent-soft); }
+.toc .n { color: var(--muted); font: 14px system-ui, sans-serif; width: 1.6em; flex: none; text-align: right; }
+.toc .t { font-family: system-ui, sans-serif; font-weight: 600; }
+.toc .d { color: var(--muted); font: 14px system-ui, sans-serif; margin-left: auto; flex: none; }
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; margin: 1em 0; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px;
+  text-decoration: none; color: var(--fg); display: block; font-family: system-ui, sans-serif; }
+.card:hover { border-color: var(--accent); }
+.card b { display: block; margin-bottom: 4px; }
+.card span { color: var(--muted); font-size: 14px; line-height: 1.4; display: block; }
+audio { width: 100%; margin: 6px 0 18px; }
+.companion { margin-top: 3em; padding: 4px 22px 14px; background: var(--card); border: 1px solid var(--border);
+  border-radius: 12px; font-size: 0.95rem; }
+.companion h2 { font-size: 1.05rem; margin-top: 1.4em; }
+.pager { display: flex; justify-content: space-between; gap: 16px; margin-top: 3em;
+  font: 15px system-ui, sans-serif; }
+.pager a { text-decoration: none; }
+
+/* demos */
+.row { display: flex; gap: 22px; flex-wrap: wrap; align-items: flex-start; margin: 1.2em 0; }
+canvas { max-width: 100%; height: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--card);
+  touch-action: none; }
+canvas.px { image-rendering: pixelated; }
+.panel { flex: 1 1 240px; min-width: 240px; background: var(--card); border: 1px solid var(--border);
+  border-radius: 10px; padding: 14px 16px; font: 14px/1.5 system-ui, "Segoe UI", sans-serif; }
+.panel label { display: block; margin: 10px 0 2px; color: var(--muted); }
+.panel label b { color: var(--fg); font-variant-numeric: tabular-nums; }
+.panel input[type=range] { width: 100%; accent-color: var(--accent); }
+.panel select, .panel input[type=number], textarea { font: inherit; padding: 4px 6px; border: 1px solid var(--border);
+  border-radius: 6px; background: var(--bg); color: var(--fg); }
+.panel select { width: 100%; }
+button { font-size: 14px; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--accent);
+  background: var(--accent); color: var(--bg); cursor: pointer; margin: 8px 6px 0 0; }
+button.ghost { background: transparent; color: var(--accent); }
+.stat { font: 600 15px system-ui, sans-serif; font-variant-numeric: tabular-nums; margin-top: 10px; }
+.try { background: var(--accent-soft); border-radius: 10px; padding: 6px 20px 10px; margin-top: 1.5em; font-size: 0.95rem; }
+.try h2 { margin-top: 0.8em; font-size: 1rem; }
+.bars { font: 13px system-ui, sans-serif; }
+.bars .bar { display: grid; grid-template-columns: 90px 1fr 52px; gap: 8px; align-items: center; margin: 5px 0; }
+.bars .bar i { display: block; height: 14px; background: var(--accent); border-radius: 3px; min-width: 1px; }
+.bars .bar span:last-child { text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); }
+.out { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px;
+  white-space: pre-wrap; font: 14px/1.6 ui-monospace, Consolas, monospace; min-height: 7em; overflow-wrap: anywhere; }
+.kgrid { display: grid; grid-template-columns: repeat(3, 58px); gap: 4px; }
+.kgrid input { width: 58px; text-align: center; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+td, th { border-top: 1px solid var(--border); padding: 7px 8px; text-align: left; vertical-align: top; }
+dl dt { font: 700 15px system-ui, sans-serif; margin-top: 1.1em; }
+dl dd { margin: 0.15em 0 0; }
+.tl { border-left: 2px solid var(--border); margin-left: 6px; padding-left: 18px; }
+.tl p { margin: 0 0 0.9em; } .tl strong:first-child { font-family: system-ui, sans-serif; color: var(--accent); }
+@media (max-width: 560px) { body { font-size: 16px; } .toc .d { display: none; } }

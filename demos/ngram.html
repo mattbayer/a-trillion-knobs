@@ -1,0 +1,57 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>N-gram text generator · A Trillion Knobs</title><link rel="stylesheet" href="../style.css"></head><body>
+<nav class="top"><a class="brand" href="../index.html">A Trillion Knobs</a><a href="../index.html">Chapters</a><a class="here" href="index.html">Demos</a><a href="../timeline.html">Timeline</a><a href="../glossary.html">Glossary</a></nav>
+<main class="wide">
+<h1>Shannon's counting language model</h1>
+<p class="lede">Chapter 5. The simplest possible language model: look at the last <i>n</i> characters, look up everything that ever followed them in the training text, and pick one in proportion. The training text here is this book itself. It is "predict the next token" with a lookup table where a neural network should be.</p>
+<div class="row">
+  <div style="flex:2 1 420px;min-width:280px">
+    <div class="out" id="out"></div>
+    <h3>What might come next?</h3>
+    <div class="ui" style="font-size:13px;color:var(--muted)" id="ctx"></div>
+    <div class="bars" id="bars"></div>
+  </div>
+  <div class="panel">
+    <label>Memory: last <b id="n-v"></b> characters</label><input type="range" id="n" min="0" max="10" step="1" value="3">
+    <button id="gen">Generate</button><button id="one" class="ghost">One character</button>
+    <div class="stat" id="st"></div>
+    <label>Or train on your own text (paste, then click away)</label>
+    <textarea id="own" rows="4" style="width:100%" placeholder="Paste any long text here…"></textarea>
+  </div>
+</div>
+<div class="try"><h2>Things to try</h2><ul>
+<li>Step the memory up from 0 to 10, generating at each. At 0 you get letter-frequency soup. At 2 to 3, pronounceable non-words. At 5 to 6, real words in ungrammatical strings. At 8 to 10, fluent phrases.</li>
+<li>But watch the <b>"seen only once"</b> figure climb. At long memory, most contexts have occurred exactly once, so the model has no choice: it is reciting the book, not generalising. That is the curse of dimensionality from chapter 5. A counting model cannot know that two different contexts are <i>similar</i>.</li>
+<li>Use <b>One character</b> and watch the bar chart: this distribution over the next token is exactly what a neural language model outputs. The difference is that a network computes it from learned representations, and so can give sensible probabilities for contexts it has never seen.</li>
+</ul></div>
+</main>
+<script src="common.js"></script>
+<script src="corpus.js"></script>
+<script>
+let T = (window.CORPUS || 'the quick brown fox jumps over the lazy dog. ').replace(/\s+/g, ' '), n = 3, text = '', tables = {};
+function table(k) { // context string -> string of all characters that followed it
+  if (tables[k]) return tables[k];
+  const m = new Map();
+  for (let i = k; i < T.length; i++) { const c = T.slice(i - k, i); m.set(c, (m.get(c) || '') + T[i]); }
+  return tables[k] = m;
+}
+function next(ctx) { // back off to shorter contexts if this one was never seen
+  for (let k = Math.min(n, ctx.length); k >= 0; k--) { const f = table(k).get(ctx.slice(ctx.length - k)); if (f) return { f, k }; }
+}
+function show() {
+  $('#out').textContent = text;
+  const { f, k } = next(text), cnt = {}; for (const ch of f) cnt[ch] = (cnt[ch] || 0) + 1;
+  const top = Object.entries(cnt).sort((a, b) => b[1] - a[1]).slice(0, 8);
+  $('#ctx').textContent = 'After "' + text.slice(text.length - k) + '" (seen ' + f.length + ' time' + (f.length > 1 ? 's' : '') + ' in the training text):';
+  $('#bars').innerHTML = top.map(([ch, v]) => '<div class="bar"><span>' + (ch === ' ' ? '␣ (space)' : ch) + '</span><i style="width:' + (v / f.length * 100) + '%"></i><span>' + (v / f.length * 100).toFixed(1) + '%</span></div>').join('');
+  const m = table(n); let once = 0; for (const v of m.values()) if (v.length === 1) once++;
+  $('#st').innerHTML = m.size.toLocaleString() + ' distinct contexts<br>' + (once / m.size * 100).toFixed(0) + '% seen only once';
+}
+function step() { const { f } = next(text); text += f[Math.floor(Math.random() * f.length)]; }
+function seed() { const i = T.indexOf('. ', Math.floor(Math.random() * (T.length - 400))) + 2; text = T.slice(i, i + Math.max(n, 1)); }
+function gen() { seed(); for (let i = 0; i < 420; i++) step(); show(); }
+bind('n', v => { n = v; if (text) gen(); });
+$('#gen').onclick = gen; $('#one').onclick = () => { step(); show(); };
+$('#own').onchange = e => { const v = e.target.value.replace(/\s+/g, ' '); if (v.length > 200) { T = v; tables = {}; gen(); } };
+gen();
+</script></body></html>
