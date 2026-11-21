@@ -1,7 +1,7 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>The Memory Problem · A Trillion Knobs</title><link rel="stylesheet" href="../style.css"></head><body>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>The Memory Problem Â· A Trillion Knobs</title><link rel="stylesheet" href="../style.css"></head><body>
 <nav class="top"><a class="brand" href="../index.html">A Trillion Knobs</a><a class=here href="../index.html">Chapters</a><a href="../demos/index.html">Demos</a><a href="../timeline.html">Timeline</a><a href="../glossary.html">Glossary</a></nav>
 <main>
-<div class="part">Part II · Language</div>
+<div class="part">Part II Â· Language</div>
 <h1>Chapter 6: The Memory Problem</h1>
 <audio controls preload="none" src="../audio/06%20-%20The%20Memory%20Problem.mp3"></audio>
 <h2>Networks with a loop</h2>
@@ -49,5 +49,5 @@
 <ul><li>RNN update: <code>hₜ = tanh(W_h hₜ₋₁ + W_x xₜ + b)</code>. The same <code>W</code> at every step, so backprop through <code>T</code> steps multiplies by (roughly) <code>W_hᵀ</code> <code>T</code> times.</li><li>LSTM cell state: <code>cₜ = fₜ ⊙ cₜ₋₁ + iₜ ⊙ c̃ₜ</code>, where the forget gate <code>fₜ</code> and input gate <code>iₜ</code> are in (0,1). Additive, like a residual connection.</li><li>Bahdanau attention at decoder step <code>t</code>: scores <code>eₜⱼ = score(sₜ, hⱼ)</code> for each source position <code>j</code>; weights <code>αₜⱼ = softmax over j of eₜⱼ</code>; context <code>cₜ = Σⱼ αₜⱼ hⱼ</code>.</li></ul>
 <h2>Sources and further reading</h2>
 <ul><li>Hochreiter &amp; Schmidhuber (1997), <a href="https://www.bioinf.jku.at/publications/older/2604.pdf">Long Short-Term Memory</a>.</li><li>Olah, <a href="https://colah.github.io/posts/2015-08-Understanding-LSTMs/">Understanding LSTM Networks</a>. The clearest explanation of the gates, with diagrams.</li><li>Karpathy (2015), <a href="https://karpathy.github.io/2015/05/21/rnn-effectiveness/">The Unreasonable Effectiveness of Recurrent Neural Networks</a>.</li><li>Sutskever, Vinyals &amp; Le (2014), <a href="https://arxiv.org/abs/1409.3215">Sequence to Sequence Learning with Neural Networks</a>.</li><li>Bahdanau, Cho &amp; Bengio (2014), <a href="https://arxiv.org/abs/1409.0473">Neural Machine Translation by Jointly Learning to Align and Translate</a>. The attention paper; see its figure 3 for the alignment grids.</li><li>Gideon Lewis-Kraus (2016), <a href="https://www.nytimes.com/2016/12/14/magazine/the-great-ai-awakening.html">The Great A.I. Awakening</a>, <em>New York Times Magazine</em>.</li></ul></div>
-<div class="pager"><a href="05.html">← Words into Vectors</a><a href="07.html">Attention Is All You Need →</a></div>
+<div class="pager"><a href="05.html">â† Words into Vectors</a><a href="07.html">Attention Is All You Need â†’</a></div>
 </main></body></html>
